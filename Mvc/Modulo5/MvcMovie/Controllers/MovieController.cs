@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MvcMovie.Data;
 using MvcMovie.Models;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace MvcMovie.Controllers
 {
@@ -20,6 +22,7 @@ namespace MvcMovie.Controllers
         }
 
         // GET: Movie
+        [Authorize]
         public async Task<IActionResult> Index()
         {
             var mvcMovieContext = _context.Movie.Include(m => m.Studio );
@@ -27,6 +30,7 @@ namespace MvcMovie.Controllers
         }
 
         // GET: Movie/Details/5
+        [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Movie == null)
@@ -46,10 +50,11 @@ namespace MvcMovie.Controllers
         }
 
         // GET: Movie/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
-            ViewData["StudioId"] = new SelectList(_context.Studio, "Id", "Nome");
-            ViewData["ArtistId"] = new SelectList(_context.Artist, "Id", "Nome");
+            ViewData["StudioId"] = new SelectList(_context.Studio, "Id", "Name");
+            ViewData["ArtistId"] = new SelectList(_context.Artist, "Id", "Name");
             return View();
         }
 
@@ -58,6 +63,7 @@ namespace MvcMovie.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("Id,Title,ReleaseDate,Genre,Price,StudioId")] Movie movie, string[] Artists)
         {
             if (ModelState.IsValid)
@@ -67,11 +73,12 @@ namespace MvcMovie.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["StudioId"] = new SelectList(_context.Studio, "Id", "Nome", movie.StudioId);
+            ViewData["StudioId"] = new SelectList(_context.Studio, "Id", "Name", movie.StudioId);
             return View(movie);
         }
 
         // GET: Movie/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Movie == null)
@@ -84,7 +91,7 @@ namespace MvcMovie.Controllers
             {
                 return NotFound();
             }
-            ViewData["StudioId"] = new SelectList(_context.Studio, "Id", "Nome", movie.StudioId);
+            ViewData["StudioId"] = new SelectList(_context.Studio, "Id", "Name", movie.StudioId);
             return View(movie);
         }
 
@@ -93,6 +100,7 @@ namespace MvcMovie.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Title,ReleaseDate,Genre,Price,StudioId")] Movie movie)
         {
             if (id != movie.Id)
@@ -120,11 +128,12 @@ namespace MvcMovie.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["StudioId"] = new SelectList(_context.Studio, "Id", "Nome", movie.StudioId);
+            ViewData["StudioId"] = new SelectList(_context.Studio, "Id", "Name", movie.StudioId);
             return View(movie);
         }
 
         // GET: Movie/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Movie == null)
@@ -146,6 +155,7 @@ namespace MvcMovie.Controllers
         // POST: Movie/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.Movie == null)

@@ -36,15 +36,16 @@ public class AuthService : IAuthService
             new Claim(ClaimTypes.Role, role),
         };
 
-        var token = new JwtSecurityToken( 
-           issuer: issuer, 
-           audience: audience, 
-           claims: claims, 
-           expires: DateTime.Now.AddMinutes(30), 
-           signingCredentials: credentials 
+        var token = new JwtSecurityToken( //cria o token
+           issuer: issuer, //emissor do token
+           audience: audience, //destinatário do token
+           claims: claims, //informações do usuário
+           expires: DateTime.Now.AddMinutes(30), //tempo de expiração do token
+           signingCredentials: credentials //credenciais do token
         );
-        
-        var tokenHandler = new JwtSecurityTokenHandler();
+
+
+        var tokenHandler = new JwtSecurityTokenHandler(); //cria um manipulador de token
 
         var stringToken = tokenHandler.WriteToken(token);
 

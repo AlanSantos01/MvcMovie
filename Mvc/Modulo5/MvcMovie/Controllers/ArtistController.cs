@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MvcMovie.Data;
 using MvcMovie.Models;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace MvcMovie.Controllers
 {
@@ -18,7 +20,7 @@ namespace MvcMovie.Controllers
         {
             _context = context;
         }
-
+        [Authorize]
         // GET: Artist
         public async Task<IActionResult> Index()
         {
@@ -27,6 +29,7 @@ namespace MvcMovie.Controllers
                           Problem("Entity set 'MvcMovieContext.Artist'  is null.");
         }
 
+        [Authorize]
         // GET: Artist/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -45,6 +48,7 @@ namespace MvcMovie.Controllers
             return View(artist);
         }
 
+        [Authorize(Roles = "Admin")]
         // GET: Artist/Create
         public IActionResult Create()
         {
@@ -56,7 +60,8 @@ namespace MvcMovie.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Nome,Bio,Site")] Artist artist)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Create([Bind("Id,Name,Bio,Site")] Artist artist)
         {
             if (ModelState.IsValid)
             {
@@ -67,6 +72,7 @@ namespace MvcMovie.Controllers
             return View(artist);
         }
 
+        [Authorize(Roles = "Admin")]
         // GET: Artist/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -88,7 +94,8 @@ namespace MvcMovie.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,Bio,Site")] Artist artist)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Bio,Site")] Artist artist)
         {
             if (id != artist.Id)
             {
@@ -118,6 +125,7 @@ namespace MvcMovie.Controllers
             return View(artist);
         }
 
+        [Authorize(Roles = "Admin")]
         // GET: Artist/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -139,6 +147,7 @@ namespace MvcMovie.Controllers
         // POST: Artist/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.Artist == null)

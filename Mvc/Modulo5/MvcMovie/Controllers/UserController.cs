@@ -1,22 +1,22 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using MvcMovie.Auth;
 using MvcMovie.Data;
 using MvcMovie.Models;
+
 
 namespace MvcMovie.Controllers
 {
     public class UsersController : Controller
     {
         private readonly MvcMovieContext _context;
+        private readonly IAuthService _authService;
 
-        public UsersController(MvcMovieContext context)
+        public UsersController(MvcMovieContext context, IAuthService authService)
         {
             _context = context;
+            _authService = authService;
         }
 
         // GET: Users
@@ -56,11 +56,12 @@ namespace MvcMovie.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Nome,Email,Senha")] User user)
+        public async Task<IActionResult> Create([Bind("Id,Name,Email,Password")] User user)
         {
             if (ModelState.IsValid)
             {
-                user.SetSenhaHash();
+                var _encryptedPassword = _authService.ComputeSha256Hash(user.Password);
+                user.Password = _encryptedPassword;
                 _context.Add(user);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -89,7 +90,7 @@ namespace MvcMovie.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,Email,Senha")] User user)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Email,Password")] User user)
         {
             if (id != user.Id)
             {
