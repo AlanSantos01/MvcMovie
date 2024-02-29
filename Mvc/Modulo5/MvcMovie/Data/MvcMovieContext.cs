@@ -28,20 +28,10 @@ namespace MvcMovie.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
         // Configuração do relacionamento de 0 para N entre Movie e Studio
-        modelBuilder.Entity<Movie>()
-            .HasOne(m => m.Studio)
-            .WithMany(s => s.Movies)
-            .HasForeignKey(m => m.StudioId);
+        modelBuilder.Entity<Movie>().HasOne(m => m.Studio).WithMany(s => s.Movies).HasForeignKey(m => m.StudioId);
 
         // Configuração do relacionamento de 1 para N entre Studio e Movie
-        modelBuilder.Entity<Studio>()
-            .HasMany(s => s.Movies)
-            .WithOne(m => m.Studio)
-            .HasForeignKey(m => m.StudioId);
+        modelBuilder.Entity<Studio>().HasMany(s => s.Movies).WithOne(m => m.Studio).HasForeignKey(m => m.StudioId);
         }
-
-
-        
-    
     }
 }
